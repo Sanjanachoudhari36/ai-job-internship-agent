@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Job & Internship Automation Platform</title>
+  <meta name="description" content="Agentic AI Career Automation Platform for Job Discovery, ATS Matching, Resume Tailoring, Cover Letters, Application Tracking, and AI Mock Interviews.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div id="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+        <div class="brand-text">
+          <h1>CareerAgent</h1>
+          <span>AI Automation</span>
+        </div>
+      </div>
+
+      <nav class="nav-group">
+        <div class="nav-section-title">Core Navigation</div>
+        <a class="nav-item active" data-view="dashboard" id="nav-dashboard">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-item" data-view="jobs" id="nav-jobs">
+          <i class="fa-solid fa-briefcase"></i>
+          <span>Opportunities</span>
+          <span class="nav-badge" id="nav-badge-jobs">24</span>
+        </a>
+        <a class="nav-item" data-view="workflow-builder" id="nav-workflow-builder">
+          <i class="fa-solid fa-wand-magic-sparkles" style="color:#d946ef;"></i>
+          <span>AI Workflow Builder</span>
+          <span class="nav-badge" style="background: rgba(217,70,239,0.2); color:#e879f9;">Custom</span>
+        </a>
+        <a class="nav-item" data-view="orchestrator" id="nav-orchestrator">
+          <i class="fa-solid fa-network-wired"></i>
+          <span>7-Agent Pipeline</span>
+          <span class="nav-badge" style="background: rgba(16,185,129,0.2); color:#34d399;">Active</span>
+        </a>
+
+        <div class="nav-section-title">AI Application Tools</div>
+        <a class="nav-item" data-view="resume" id="nav-resume">
+          <i class="fa-solid fa-file-lines"></i>
+          <span>Resume Studio</span>
+        </a>
+        <a class="nav-item" data-view="cover-letter" id="nav-cover-letter">
+          <i class="fa-solid fa-envelope-open-text"></i>
+          <span>Cover Letter</span>
+        </a>
+        <a class="nav-item" data-view="tracker" id="nav-tracker">
+          <i class="fa-solid fa-table-columns"></i>
+          <span>Kanban Tracker</span>
+        </a>
+        <a class="nav-item" data-view="interview" id="nav-interview">
+          <i class="fa-solid fa-microphone-lines"></i>
+          <span>Mock Interview</span>
+        </a>
+
+        <div class="nav-section-title">Settings</div>
+        <a class="nav-item" data-view="profile" id="nav-profile">
+          <i class="fa-solid fa-user-gear"></i>
+          <span>Profile & Skills</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-user" id="sidebar-user-box">
+        <div class="user-avatar" id="sidebar-avatar">AM</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebar-username">Alex Morgan</div>
+          <div class="user-role" id="sidebar-useremail">student@example.com</div>
+        </div>
+        <button class="btn-icon" id="btn-logout" title="Switch Account / Logout">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content" id="main-content">
+      <!-- Top Sticky Header -->
+      <header class="top-header">
+        <div class="header-title">
+          <h2 id="view-header-title"><i class="fa-solid fa-chart-pie" style="color:#818cf8;"></i> AI Career Dashboard</h2>
+          <p id="view-header-subtitle">Overview of matches, active applications, deadlines and agent telemetry</p>
+        </div>
+
+        <div class="header-actions">
+          <button class="btn btn-secondary btn-sm" id="btn-quick-sync" title="Sync & Recalculate AI Match Scores">
+            <i class="fa-solid fa-arrows-rotate"></i> Sync AI
+          </button>
+          <button class="btn btn-primary btn-sm" id="btn-trigger-orchestrator">
+            <i class="fa-solid fa-bolt"></i> Run Multi-Agent
+          </button>
+        </div>
+      </header>
+
+      <!-- Dynamic View Container -->
+      <div class="view-container" id="view-container">
+        <!-- Rendered by JavaScript components -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Reusable Modal Backdrop -->
+  <div class="modal-backdrop" id="app-modal">
+    <div class="modal-container" id="modal-container">
+      <div class="modal-header">
+        <h3 class="card-title" id="modal-title">Modal Title</h3>
+        <button class="btn-icon" id="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- Dynamic Modal Content -->
+      </div>
+      <div class="modal-footer" id="modal-footer">
+        <button class="btn btn-secondary btn-sm" id="modal-cancel-btn">Close</button>
+        <button class="btn btn-primary btn-sm" id="modal-submit-btn">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/components/dashboard.js"></script>
+  <script src="/static/js/components/jobs.js"></script>
+  <script src="/static/js/components/workflow_builder.js"></script>
+  <script src="/static/js/components/resume.js"></script>
+  <script src="/static/js/components/cover_letter.js"></script>
+  <script src="/static/js/components/tracker.js"></script>
+  <script src="/static/js/components/interview.js"></script>
+  <script src="/static/js/components/orchestrator.js"></script>
+  <script src="/static/js/components/profile.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
