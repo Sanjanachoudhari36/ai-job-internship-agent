@@ -38,6 +38,20 @@ const App = {
   },
 
   setupNavigation() {
+    const sidebar = document.getElementById('sidebar');
+    const menuToggle = document.getElementById('mobile-menu-toggle');
+    const closeMobileMenu = () => {
+      sidebar?.classList.remove('mobile-open');
+      menuToggle?.setAttribute('aria-expanded', 'false');
+      if (menuToggle) menuToggle.innerHTML = '<i class="fa-solid fa-bars"></i>';
+    };
+
+    menuToggle?.addEventListener('click', () => {
+      const isOpen = sidebar?.classList.toggle('mobile-open');
+      menuToggle.setAttribute('aria-expanded', String(Boolean(isOpen)));
+      menuToggle.innerHTML = `<i class="fa-solid ${isOpen ? 'fa-xmark' : 'fa-bars'}"></i>`;
+    });
+
     const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(item => {
       item.addEventListener('click', (e) => {
@@ -45,6 +59,7 @@ const App = {
         const viewId = item.dataset.view;
         if (viewId) {
           this.navigate(viewId);
+          closeMobileMenu();
         }
       });
     });
@@ -193,6 +208,10 @@ const App = {
         <div style="display:flex; gap:10px;">
           <button class="btn btn-primary btn-sm" id="auth-btn-login" style="flex:1;">Login</button>
           <button class="btn btn-secondary btn-sm" id="auth-btn-register" style="flex:1;">Register New</button>
+        </div>
+        <div style="margin-top:10px;">
+           <button class="btn btn-secondary btn-sm" id="auth-btn-logout" style="width:100%;">
+           <i class="fa-solid fa-right-from-bracket"></i>Logout</button> 
         </div>
       </div>
     `;
