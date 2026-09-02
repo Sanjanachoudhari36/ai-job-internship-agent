@@ -54,9 +54,9 @@ const OrchestratorView = {
         </div>
 
         <!-- Orchestrator Control & Terminal -->
-        <div style="display:grid; grid-template-columns: 1fr 2fr; gap:24px;">
+        <div class="orchestrator-layout" style="display:grid; grid-template-columns: 1fr 2fr; gap:24px;">
           <!-- Controls -->
-          <div class="glass-card">
+          <div class="glass-card orchestrator-column">
             <div class="card-header">
               <h3 class="card-title" style="font-size:1rem;"><i class="fa-solid fa-sliders" style="color:#06b6d4;"></i> Launch Parameters</h3>
             </div>
@@ -89,7 +89,7 @@ const OrchestratorView = {
           </div>
 
           <!-- Live Terminal Output -->
-          <div class="glass-card" style="display:flex; flex-direction:column;">
+          <div class="glass-card orchestrator-column orchestrator-terminal-panel" style="display:flex; flex-direction:column;">
             <div class="card-header">
               <h3 class="card-title" style="font-size:1rem;"><i class="fa-solid fa-terminal" style="color:#818cf8;"></i> Live Agent Telemetry Terminal</h3>
               <span id="orchestrator-status-badge" class="badge" style="background:rgba(255,255,255,0.05); color:var(--text-muted);">Idle</span>
@@ -132,10 +132,30 @@ const OrchestratorView = {
 
   async runPipeline(container, targetJobId = null) {
     const jobSelect = container.querySelector('#orchestrator-job-select');
-    const jobId = targetJobId || parseInt(jobSelect.value);
-    const resumeCheck = container.querySelector('#orch-chk-resume').checked;
-    const clCheck = container.querySelector('#orch-chk-cl').checked;
-    const interviewCheck = container.querySelector('#orch-chk-interview').checked;
+    if (targetJobId && jobSelect) {
+      jobSelect.value = String(targetJobId);
+    }
+    let jobId = targetJobId || (jobSelect ? parseInt(jobSelect.value) : null);
+
+    // If still no jobId, fetch jobs if list is empty or select first
+    if (!jobId || isNaN(jobId)) {
+      if (!this.jobsList || this.jobsList.length === 0) {
+        this.jobsList = await API.getJobs();
+      }
+      if (this.jobsList && this.jobsList.length > 0) {
+        jobId = this.jobsList[0].job_id;
+        if (jobSelect) jobSelect.value = String(jobId);
+      }
+    }
+
+    if (!jobId) {
+      App.showToast('Please select a target opportunity to orchestrate.', 'error');
+      return;
+    }
+
+    const resumeCheck = container.querySelector('#orch-chk-resume')?.checked ?? true;
+    const clCheck = container.querySelector('#orch-chk-cl')?.checked ?? true;
+    const interviewCheck = container.querySelector('#orch-chk-interview')?.checked ?? true;
 
     const terminal = container.querySelector('#agent-terminal-logs');
     const statusBadge = container.querySelector('#orchestrator-status-badge');
@@ -143,7 +163,7 @@ const OrchestratorView = {
 
     statusBadge.style.background = 'rgba(99,102,241,0.2)';
     statusBadge.style.color = '#818cf8';
-    statusBadge.textContent = 'Orchestrating Agents...';
+    statusBadge.textContent = 'Orchestrating 7 Agents...';
     terminal.innerHTML = '';
     resultsBox.innerHTML = '';
 

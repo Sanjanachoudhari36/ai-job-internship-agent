@@ -10,9 +10,9 @@ const InterviewView = {
 
   async render(container) {
     container.innerHTML = `
-      <div style="display:grid; grid-template-columns: 1fr 2fr; gap: 24px;">
+      <div class="interview-layout" style="display:grid; grid-template-columns: 1fr 2fr; gap: 24px;">
         <!-- Left: Configuration & Question List -->
-        <div style="display:flex; flex-direction:column; gap:20px;">
+        <div class="interview-column" style="display:flex; flex-direction:column; gap:20px;">
           <div class="glass-card">
             <div class="card-header">
               <h3 class="card-title"><i class="fa-solid fa-microphone-lines" style="color:#10b981;"></i> Mock Setup</h3>

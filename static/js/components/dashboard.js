@@ -13,9 +13,43 @@ const DashboardView = {
 
     try {
       const data = await API.getDashboardAnalytics();
-      const best = data.best_match || { title: 'Python Developer Intern', company: 'Pythonic AI Labs', match_score: 94 };
-      const good = data.good_match || { title: 'Software Engineer Intern', company: 'NextGen Cloud', match_score: 88 };
-      const breakdown = data.applications_breakdown || { applied: 12, assessment: 3, interview: 2, selected: 1, rejected: 4 };
+      const best = data.best_match;
+      const good = data.good_match;
+      const breakdown = data.applications_breakdown || {};
+      const deadlines = data.upcoming_deadlines || [];
+      const interviews = data.upcoming_interviews || [];
+      const formatDate = (value, fallback = 'Date not set') => {
+        if (!value) return fallback;
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString(undefined, {
+          day: 'numeric', month: 'short', year: 'numeric'
+        });
+      };
+      const formatInterviewDate = (value) => {
+        if (!value) return 'Time not set';
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? value : date.toLocaleString(undefined, {
+          day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit'
+        });
+      };
+      const matchTitle = (match) => match ? `${match.title} (${match.company})` : 'No match available';
+      const renderEvents = () => {
+        const eventMarkup = [
+          ...deadlines.map(event => `
+            <div style="background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b; padding: 10px 12px; border-radius: var(--radius-sm);">
+              <div style="font-size:0.82rem; font-weight:700; color:#fbbf24;">Application Deadline: ${event.company}</div>
+              <div style="font-size:0.75rem; color:var(--text-secondary);">${formatDate(event.deadline)} • ${event.title}</div>
+            </div>
+          `),
+          ...interviews.map(event => `
+            <div style="background: rgba(99, 102, 241, 0.1); border-left: 3px solid #818cf8; padding: 10px 12px; border-radius: var(--radius-sm);">
+              <div style="font-size:0.82rem; font-weight:700; color:#a5b4fc;">Interview: ${event.company}</div>
+              <div style="font-size:0.75rem; color:var(--text-secondary);">${formatInterviewDate(event.interview_date)} • ${event.title}</div>
+            </div>
+          `)
+        ].join('');
+        return eventMarkup || '<div style="font-size:0.82rem; color:var(--text-muted);">No upcoming events.</div>';
+      };
 
       container.innerHTML = `
         <!-- KPI Row -->
@@ -37,9 +71,9 @@ const DashboardView = {
             </div>
             <div class="kpi-details">
               <div class="kpi-label">🔥 Best Match</div>
-              <div class="kpi-value" style="color:#34d399;">${best.match_score || 94}%</div>
+              <div class="kpi-value" style="color:#34d399;">${best?.match_score ?? 0}%</div>
               <div class="kpi-subtitle" style="color:#cbd5e1; font-size:0.75rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                ${best.title} (${best.company})
+                ${matchTitle(best)}
               </div>
             </div>
           </div>
@@ -50,9 +84,9 @@ const DashboardView = {
             </div>
             <div class="kpi-details">
               <div class="kpi-label">🎯 Good Match</div>
-              <div class="kpi-value" style="color:#22d3ee;">${good.match_score || 88}%</div>
+              <div class="kpi-value" style="color:#22d3ee;">${good?.match_score ?? 0}%</div>
               <div class="kpi-subtitle" style="color:#cbd5e1; font-size:0.75rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                ${good.title} (${good.company})
+                ${matchTitle(good)}
               </div>
             </div>
           </div>
@@ -63,18 +97,18 @@ const DashboardView = {
             </div>
             <div class="kpi-details">
               <div class="kpi-label">📅 Upcoming Deadlines</div>
-              <div class="kpi-value" style="color:#fbbf24;">${data.upcoming_deadlines?.length || 1}</div>
+              <div class="kpi-value" style="color:#fbbf24;">${deadlines.length}</div>
               <div class="kpi-subtitle" style="color:#cbd5e1; font-size:0.75rem;">
-                ${data.upcoming_deadlines?.[0]?.company || 'ABC Technologies'} (${data.upcoming_deadlines?.[0]?.deadline || '28 Aug'})
+                ${deadlines[0] ? `${deadlines[0].company} (${formatDate(deadlines[0].deadline)})` : 'No deadlines scheduled'}
               </div>
             </div>
           </div>
         </div>
 
         <!-- 2-Column Dashboard Grid -->
-        <div style="display:grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+        <div class="dashboard-shell" style="display:grid; grid-template-columns: 2fr 1fr; gap: 24px;">
           <!-- Left Column: Opportunities & Funnel -->
-          <div style="display:flex; flex-direction:column; gap:24px;">
+          <div class="dashboard-column dashboard-main-column" style="display:flex; flex-direction:column; gap:24px;">
             <!-- Top Matches Table -->
             <div class="glass-card">
               <div class="card-header">
@@ -120,7 +154,7 @@ const DashboardView = {
           </div>
 
           <!-- Right Column: Quick Status & Actions -->
-          <div style="display:flex; flex-direction:column; gap:24px;">
+          <div class="dashboard-column dashboard-side-column" style="display:flex; flex-direction:column; gap:24px;">
             <!-- Profile Readiness Widget -->
             <div class="glass-card" style="background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9));">
               <div class="card-header" style="margin-bottom:12px;">
@@ -169,14 +203,7 @@ const DashboardView = {
                 <h3 class="card-title" style="font-size:0.95rem;"><i class="fa-solid fa-bell" style="color:#f59e0b;"></i> Upcoming Events</h3>
               </div>
               <div style="display:flex; flex-direction:column; gap:10px;">
-                <div style="background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b; padding: 10px 12px; border-radius: var(--radius-sm);">
-                  <div style="font-size:0.82rem; font-weight:700; color:#fbbf24;">Application Deadline: ABC Tech</div>
-                  <div style="font-size:0.75rem; color:var(--text-secondary);">28 Aug 2026 • Full Stack AI Engineer</div>
-                </div>
-                <div style="background: rgba(99, 102, 241, 0.1); border-left: 3px solid #818cf8; padding: 10px 12px; border-radius: var(--radius-sm);">
-                  <div style="font-size:0.82rem; font-weight:700; color:#a5b4fc;">Technical Interview: DataSphere</div>
-                  <div style="font-size:0.75rem; color:var(--text-secondary);">Scheduled for this Friday at 3:00 PM</div>
-                </div>
+                ${renderEvents()}
               </div>
             </div>
           </div>

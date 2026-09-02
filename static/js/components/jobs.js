@@ -10,20 +10,20 @@ const JobsView = {
   async render(container) {
     container.innerHTML = `
       <!-- Filter Bar -->
-      <div class="glass-card" style="margin-bottom: 24px; padding: 18px 24px;">
-        <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
-          <div style="flex: 1; min-width: 260px; position: relative;">
+      <div class="glass-card jobs-toolbar" style="margin-bottom: 24px; padding: 18px 24px;">
+        <div class="jobs-toolbar-inner" style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+          <div class="jobs-search-group" style="flex: 1; min-width: 260px; position: relative;">
             <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 12px; color: var(--text-muted);"></i>
             <input type="text" id="jobs-search-input" class="input-field" placeholder="Search by role, company, or tech skills (e.g., Python, React)..." style="padding-left: 40px;" value="${this.searchQuery}">
           </div>
 
-          <div style="display: flex; gap: 8px;">
+          <div class="jobs-filter-group" style="display: flex; gap: 8px;">
             <button class="btn ${this.selectedFilter === 'all' ? 'btn-primary' : 'btn-secondary'} btn-sm filter-btn" data-filter="all">All Roles</button>
             <button class="btn ${this.selectedFilter === 'internship' ? 'btn-primary' : 'btn-secondary'} btn-sm filter-btn" data-filter="internship">Internships</button>
             <button class="btn ${this.selectedFilter === 'full-time' ? 'btn-primary' : 'btn-secondary'} btn-sm filter-btn" data-filter="full-time">Full-Time</button>
           </div>
 
-          <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer;">
+          <label class="jobs-actions" style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer;">
             <input type="checkbox" id="jobs-remote-toggle" ${this.remoteOnly ? 'checked' : ''} style="cursor: pointer; accent-color: var(--primary);">
             <span>Remote Only</span>
           </label>
@@ -116,9 +116,9 @@ const JobsView = {
     listContainer.innerHTML = `
       <div style="display: flex; flex-direction: column; gap: 16px;">
         ${filtered.map(job => `
-          <div class="glass-card" style="display:flex; flex-direction:column; gap:14px;">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;">
-              <div style="display:flex; gap:16px; align-items:center;">
+          <div class="glass-card job-card" style="display:flex; flex-direction:column; gap:14px;">
+            <div class="job-card-top" style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;">
+              <div class="job-card-header" style="display:flex; gap:16px; align-items:center;">
                 <div style="width:48px; height:48px; border-radius:var(--radius-md); background: rgba(99,102,241,0.15); border:1px solid rgba(99,102,241,0.3); display:flex; align-items:center; justify-content:center; font-size:1.4rem; color:#818cf8;">
                   <i class="fa-solid fa-building"></i>
                 </div>
@@ -138,7 +138,7 @@ const JobsView = {
               </div>
 
               <!-- Match Badge & Actions -->
-              <div style="display:flex; align-items:center; gap:12px;">
+              <div class="job-card-actions" style="display:flex; align-items:center; gap:12px;">
                 ${job.match_score !== null ? `
                   <button class="badge badge-score ${job.match_score >= 80 ? 'high' : job.match_score >= 65 ? 'medium' : ''}" style="cursor:pointer; border-radius:var(--radius-md); padding:8px 14px; font-size:0.85rem;" onclick="JobsView.showMatchBreakdown(${job.job_id})" title="Click to view full 6-factor score breakdown">
                     🎯 ${job.match_score}% Match <i class="fa-solid fa-chevron-right" style="font-size:0.7rem;"></i>

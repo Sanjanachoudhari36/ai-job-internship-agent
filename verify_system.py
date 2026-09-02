@@ -10,7 +10,7 @@ if sys.platform == "win32":
         pass
 
 from app.database import engine, Base, IS_MONGODB, get_db
-from app.models import User, Job, Application
+from app.models import User, Job, Application, Workflow
 from app.seed_data import seed_database
 from app.auth import get_password_hash, verify_password, create_access_token
 from app.agents.job_search_agent import JobSearchAgent
@@ -20,6 +20,8 @@ from app.agents.cover_letter_agent import CoverLetterAgent
 from app.agents.tracker_agent import ApplicationTrackingAgent
 from app.agents.interview_agent import InterviewPreparationAgent
 from app.agents.orchestrator import OrchestratorAgent
+from app.agents.workflow_engine import WorkflowEngine
+from app.routers.workflow_routes import DEFAULT_WORKFLOW_TEMPLATES
 
 async def run_tests():
     print(f"=== 1. Testing Database ({'MongoDB Atlas' if IS_MONGODB else 'SQL'}) & Seeding ===")
@@ -89,19 +91,49 @@ async def run_tests():
     print(f"  [+] Feedback: {eval_res.feedback}")
     assert eval_res.score >= 70, "Relevant technical answer should score >= 70"
 
-    print("\n=== 8. Testing Multi-Agent Orchestrator Pipeline ===")
+    print("\n=== 8. Testing 7-Agent Multi-Agent Orchestrator Pipeline ===")
     orch_res = await OrchestratorAgent.run_full_pipeline(db, user, target_job.job_id)
     print(f"  [+] Orchestrator Status: {orch_res.overall_status}")
     print(f"  [+] Steps executed: {len(orch_res.steps)}")
     for step in orch_res.steps:
         print(f"      [{step.agent_name}]: {step.message}")
     assert orch_res.overall_status == "completed", "Orchestrator pipeline should complete successfully"
+    assert len(orch_res.steps) >= 7, "All pipeline stages should be executed and logged"
+
+    print("\n=== 9. Testing Dynamic AI Workflow Engine (7-Node Custom Pipeline) ===")
+    test_template = DEFAULT_WORKFLOW_TEMPLATES[0]  # Full Auto-Pilot Application Packager
+    custom_wf = Workflow(
+        user_id=user.user_id,
+        name=test_template["name"],
+        description=test_template["description"],
+        trigger_type=test_template["trigger_type"],
+        icon=test_template["icon"],
+        nodes=json.dumps(test_template["nodes"]),
+        is_active=True
+    )
+    db.add(custom_wf)
+    db.commit()
+    db.refresh(custom_wf)
+
+    wf_res = await WorkflowEngine.execute_workflow(
+        db=db,
+        workflow=custom_wf,
+        user=user,
+        target_job_id=target_job.job_id
+    )
+    print(f"  [+] Workflow Run Status: {wf_res.status}")
+    print(f"  [+] Total Nodes Executed: {len(wf_res.steps_executed)}")
+    for s in wf_res.steps_executed:
+        print(f"      [{s.agent_name}]: {s.message}")
+    assert wf_res.status == "completed", "Dynamic workflow should complete successfully"
+    assert len(wf_res.steps_executed) >= 7, "All workflow nodes should execute"
+    assert "artifacts" in wf_res.model_dump(), "Artifacts should be collected"
 
     try:
         db_gen.close()
     except Exception:
         pass
-    print("\n🎉 ALL 8 AUTOMATED VERIFICATION SUITES PASSED PERFECTLY ON MONGODB ATLAS! 🎉\n")
+    print("\n🎉 ALL 9 AUTOMATED VERIFICATION SUITES (7 PIPELINE & AI WORKFLOW ENGINE) PASSED PERFECTLY! 🎉\n")
 
 if __name__ == "__main__":
     asyncio.run(run_tests())

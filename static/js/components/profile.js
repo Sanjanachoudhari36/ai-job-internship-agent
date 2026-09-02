@@ -16,7 +16,7 @@ const ProfileView = {
       const p = this.profileData;
 
       container.innerHTML = `
-        <div style="max-width: 900px; margin: 0 auto; display:flex; flex-direction:column; gap:24px;">
+        <div class="profile-shell" style="max-width: 900px; margin: 0 auto; display:flex; flex-direction:column; gap:24px;">
           <div class="glass-card">
             <div class="card-header">
               <h3 class="card-title"><i class="fa-solid fa-id-card" style="color:#6366f1;"></i> Candidate Profile & Career Preferences</h3>
@@ -38,7 +38,7 @@ const ProfileView = {
             </div>
 
             <!-- Education & Graduation -->
-            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:16px;">
+            <div class="profile-form-row" style="display:grid; grid-template-columns: 2fr 1fr; gap:16px;">
               <div class="form-group">
                 <label class="form-label">Education / Major:</label>
                 <input type="text" id="prof-education" class="input-field" value="${p.education || ''}" placeholder="e.g. B.Tech in Computer Science & Engineering">
@@ -69,7 +69,7 @@ const ProfileView = {
             </div>
 
             <!-- Target Roles & Preferred Locations -->
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+            <div class="profile-form-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
               <div class="form-group">
                 <label class="form-label">Preferred Target Roles (comma separated):</label>
                 <input type="text" id="prof-roles" class="input-field" value="${(p.preferred_roles || []).join(', ')}" placeholder="e.g. Python Developer, Full Stack Engineer, AI Engineer">

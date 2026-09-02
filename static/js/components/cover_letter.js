@@ -6,9 +6,9 @@ const CoverLetterView = {
 
   async render(container) {
     container.innerHTML = `
-      <div style="display:grid; grid-template-columns: 1fr 1.3fr; gap: 24px;">
+      <div class="cover-letter-layout" style="display:grid; grid-template-columns: 1fr 1.3fr; gap: 24px;">
         <!-- Left: Configuration & Prompts -->
-        <div style="display:flex; flex-direction:column; gap:20px;">
+        <div class="cover-letter-column" style="display:flex; flex-direction:column; gap:20px;">
           <div class="glass-card">
             <div class="card-header">
               <h3 class="card-title"><i class="fa-solid fa-envelope-open-text" style="color:#06b6d4;"></i> Cover Letter Agent</h3>
@@ -54,7 +54,7 @@ const CoverLetterView = {
         </div>
 
         <!-- Right: Generated Document Editor -->
-        <div class="glass-card" style="display:flex; flex-direction:column; min-height:550px;">
+        <div class="glass-card cover-letter-output-panel" style="display:flex; flex-direction:column; min-height:550px;">
           <div class="card-header">
             <h3 class="card-title" style="font-size:1rem;"><i class="fa-solid fa-file-lines" style="color:#818cf8;"></i> Generated Cover Letter</h3>
             <div style="display:flex; gap:8px;">

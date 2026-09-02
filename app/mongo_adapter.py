@@ -88,6 +88,8 @@ class MongoSession:
         if t == "jobs": return "job_id"
         if t == "applications": return "application_id"
         if t == "interview_sessions": return "session_id"
+        if t == "workflows": return "workflow_id"
+        if t == "workflow_executions": return "execution_id"
         return "id"
 
     def _model_to_dict(self, obj: Any) -> dict:
@@ -95,7 +97,7 @@ class MongoSession:
         for k, v in obj.__dict__.items():
             if not k.startswith("_") and not callable(v):
                 # Relationships shouldn't be serialized directly
-                if k in ["user", "job", "applications", "interview_sessions"]:
+                if k in ["user", "job", "applications", "interview_sessions", "workflows"]:
                     continue
                 data[k] = v
         return data

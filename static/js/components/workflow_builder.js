@@ -39,9 +39,9 @@ const WorkflowBuilderView = {
       </div>
 
       <!-- Main Grid: Workflow Library + Visual Flow Canvas -->
-      <div style="display:grid; grid-template-columns: 1fr 2fr; gap:24px;">
+      <div class="workflow-layout" style="display:grid; grid-template-columns: 1fr 2fr; gap:24px;">
         <!-- Left Column: Workflow Library & Preset Templates -->
-        <div style="display:flex; flex-direction:column; gap:20px;">
+        <div class="workflow-column" style="display:flex; flex-direction:column; gap:20px;">
           <div class="glass-card">
             <div class="card-header">
               <h4 class="card-title" style="font-size:0.95rem;"><i class="fa-solid fa-layer-group" style="color:#818cf8;"></i> My Agent Workflows</h4>
@@ -372,6 +372,59 @@ const WorkflowBuilderView = {
         App.showToast(err.message, 'error');
       }
     }, 'Add Node');
+  },
+
+  editWorkflowMeta() {
+    if (!this.currentWorkflow) return;
+    const wf = this.currentWorkflow;
+
+    const content = `
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="form-group">
+          <label class="form-label">Workflow Name:</label>
+          <input type="text" id="edit-wf-name" class="input-field" value="${wf.name || ''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description:</label>
+          <textarea id="edit-wf-desc" class="input-field" rows="3">${wf.description || ''}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Trigger Type:</label>
+          <select id="edit-wf-trigger" class="input-field">
+            <option value="manual" ${wf.trigger_type === 'manual' ? 'selected' : ''}>Manual 1-Click Trigger</option>
+            <option value="on_new_job" ${wf.trigger_type === 'on_new_job' ? 'selected' : ''}>On New Matching Job Discovered</option>
+            <option value="on_save_job" ${wf.trigger_type === 'on_save_job' ? 'selected' : ''}>On Opportunity Saved to Pipeline</option>
+          </select>
+        </div>
+      </div>
+    `;
+
+    App.showModal('Edit Workflow Settings', content, async () => {
+      const name = document.getElementById('edit-wf-name').value.trim();
+      const desc = document.getElementById('edit-wf-desc').value.trim();
+      const trigger = document.getElementById('edit-wf-trigger').value;
+
+      if (!name) {
+        App.showToast('Workflow name cannot be empty', 'error');
+        return;
+      }
+
+      try {
+        const updated = await API.updateWorkflow(wf.workflow_id, {
+          name: name,
+          description: desc,
+          trigger_type: trigger
+        });
+        this.currentWorkflow.name = updated.name;
+        this.currentWorkflow.description = updated.description;
+        this.currentWorkflow.trigger_type = updated.trigger_type;
+        App.showToast('Workflow settings updated!', 'success');
+        await this.loadWorkflows();
+        this.renderCanvas();
+      } catch (err) {
+        App.showToast(err.message, 'error');
+      }
+    }, 'Save Changes');
   },
 
   async moveNode(index, direction) {

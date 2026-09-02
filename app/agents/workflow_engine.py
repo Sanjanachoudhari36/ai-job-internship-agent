@@ -1,5 +1,6 @@
 import uuid
 import datetime
+import json
 from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session
 from app.models import User, Job, Workflow, WorkflowExecution, Application
@@ -164,7 +165,12 @@ class WorkflowEngine:
 
             elif agent_type == "interview_prep":
                 q_count = int(cfg.get("question_count", 4))
-                questions = await InterviewPreparationAgent.generate_questions(current_job, count=q_count)
+                questions = await InterviewPreparationAgent.generate_questions(
+                    job=current_job,
+                    role_title=current_job.title if current_job else "Software Engineer",
+                    company_name=current_job.company if current_job else "Tech Innovations",
+                    count=q_count
+                )
                 artifacts["interview_questions"] = [q.model_dump() for q in questions]
                 add_step(label, icon, "completed", f"Interview Preparation Agent generated {len(questions)} role-specific practice questions.", {
                     "count": len(questions),
@@ -184,8 +190,8 @@ class WorkflowEngine:
             user_id=user.user_id,
             job_id=current_job.job_id if current_job else None,
             status="completed",
-            steps_log=str([s.model_dump() for s in steps]),
-            results=str(artifacts)
+            steps_log=json.dumps([s.model_dump() for s in steps]),
+            results=json.dumps(artifacts, default=str)
         )
         db.add(execution)
         db.commit()

@@ -7,9 +7,9 @@ const ResumeView = {
 
   async render(container) {
     container.innerHTML = `
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+      <div class="resume-layout" style="display:grid; grid-template-columns: 1fr 1fr; gap: 24px;">
         <!-- Left Column: Upload & Configuration -->
-        <div style="display:flex; flex-direction:column; gap:20px;">
+        <div class="resume-column" style="display:flex; flex-direction:column; gap:20px;">
           <!-- Upload Card -->
           <div class="glass-card">
             <div class="card-header">
@@ -56,7 +56,7 @@ const ResumeView = {
         </div>
 
         <!-- Right Column: ATS Report & Tailored Draft Preview -->
-        <div id="resume-results-container">
+        <div id="resume-results-container" class="resume-results-column">
           <div class="glass-card" style="text-align:center; padding:60px 24px; min-height:400px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
             <i class="fa-solid fa-file-waveform fa-3x" style="color:var(--text-muted); margin-bottom:16px;"></i>
             <h3 style="font-size:1.1rem;">ATS Analysis & Tailored Draft Ready</h3>

@@ -145,7 +145,12 @@ class OrchestratorAgent:
         # 7. Interview Preparation Agent Step
         if include_interview_prep:
             add_step("Interview Preparation Agent", "🎤", "running", "Generating technical, HR & company-specific interview question set...")
-            questions = await InterviewPreparationAgent.generate_questions(job, job.title, job.company, count=4)
+            questions = await InterviewPreparationAgent.generate_questions(
+                job=job,
+                role_title=job.title,
+                company_name=job.company,
+                count=4
+            )
             results["interview_questions"] = [q.model_dump() for q in questions]
             add_step("Interview Preparation Agent", "🎤", "completed", f"Generated {len(questions)} mock interview questions with assessment rubrics.", {
                 "question_count": len(questions),

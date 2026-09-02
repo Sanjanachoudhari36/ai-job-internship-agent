@@ -17,17 +17,19 @@ class InterviewPreparationAgent:
     @staticmethod
     async def generate_questions(
         job: Optional[Job] = None,
-        role_title: str = "Software Engineer",
-        company_name: str = "Tech Innovations",
+        role_title: Optional[str] = None,
+        company_name: Optional[str] = None,
         count: int = 5
     ) -> List[InterviewQuestion]:
+        resolved_role = (role_title if role_title and role_title != "Software Engineer" else (job.title if job else "Software Engineer")) or "Software Engineer"
+        resolved_company = (company_name if company_name and company_name != "Tech Innovations" else (job.company if job else "Tech Innovations")) or "Tech Innovations"
         skills = job.get_skills_list() if job else ["Python", "Algorithms", "System Design", "SQL", "Git"]
-        jd_text = job.description if job else f"Role: {role_title} at {company_name}."
+        jd_text = job.description if job else f"Role: {resolved_role} at {resolved_company}."
 
         prompt = f"""
 Generate {count} realistic, challenging interview questions for:
-Role: {role_title}
-Company: {company_name}
+Role: {resolved_role}
+Company: {resolved_company}
 Required Skills: {', '.join(skills)}
 Job Description: {jd_text[:1000]}
 
@@ -80,15 +82,15 @@ Respond in JSON with an array of objects:
                     question=f"Can you explain how you would design a scalable REST API using {skills[0] if skills else 'Python'} to handle high concurrent traffic?",
                     category="Technical",
                     difficulty="Medium",
-                    context=f"Tests practical backend knowledge and architectural thinking for {role_title}.",
+                    context=f"Tests practical backend knowledge and architectural thinking for {resolved_role}.",
                     sample_key_points=["Asynchronous handlers", "Database indexing & connection pooling", "Caching with Redis", "Rate limiting"]
                 ),
                 InterviewQuestion(
                     id=2,
-                    question=f"Why are you interested in joining {company_name}, and how do your technical skills align with our engineering mission?",
+                    question=f"Why are you interested in joining {resolved_company}, and how do your technical skills align with our engineering mission?",
                     category="Company-Specific",
                     difficulty="Entry-Level",
-                    context=f"Tests motivation, company research, and cultural enthusiasm for {company_name}.",
+                    context=f"Tests motivation, company research, and cultural enthusiasm for {resolved_company}.",
                     sample_key_points=["Demonstrating company knowledge", "Connecting past projects to team needs", "Long-term career aspirations"]
                 ),
                 InterviewQuestion(

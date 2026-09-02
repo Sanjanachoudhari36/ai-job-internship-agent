@@ -6,6 +6,7 @@ const App = {
   views: {
     dashboard: { component: DashboardView, title: 'AI Career Dashboard', subtitle: 'Overview of matches, active applications, deadlines and agent telemetry', icon: 'fa-chart-pie' },
     jobs: { component: JobsView, title: 'Opportunity Discovery & Matcher', subtitle: 'Search, filter and score compatibility across job and internship sources', icon: 'fa-briefcase' },
+    'workflow-builder': { component: WorkflowBuilderView, title: 'AI Workflow Builder', subtitle: 'Design, customize, and orchestrate automated multi-agent career pipelines', icon: 'fa-wand-magic-sparkles' },
     orchestrator: { component: OrchestratorView, title: 'Multi-Agent Pipeline Visualizer', subtitle: 'Real-time telemetry and state coordination of all 7 specialized AI agents', icon: 'fa-network-wired' },
     resume: { component: ResumeView, title: 'AI Resume Studio & ATS Analyzer', subtitle: 'ATS keyword optimization, gap identification and impact-driven tailoring', icon: 'fa-file-lines' },
     'cover-letter': { component: CoverLetterView, title: 'Personalized Cover Letter Agent', subtitle: 'Synthesize profile strengths, resume background, and job requirements', icon: 'fa-envelope-open-text' },
